@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cocoa Bakes — Bengaluru's Sweetest Spot</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fdf6ec;
+    --brown: #3d1f0d;
+    --mocha: #7b4a2d;
+    --caramel: #c8813a;
+    --gold: #e6a84b;
+    --rose: #e8c4a0;
+    --dark: #1a0d05;
+    --white: #fff9f3;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--brown); overflow-x: hidden; }
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(253,246,236,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(200,129,58,0.2);
+    padding: 0 5vw; display: flex; align-items: center; justify-content: space-between; height: 70px;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 900; color: var(--brown); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--caramel); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--mocha); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--caramel); }
+  .nav-cart {
+    position: relative; background: var(--brown); color: var(--cream);
+    border: none; padding: 0.6rem 1.4rem; border-radius: 50px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer;
+    display: flex; align-items: center; gap: 0.5rem; transition: background 0.2s, transform 0.15s;
+  }
+  .nav-cart:hover { background: var(--mocha); transform: scale(1.03); }
+  .cart-badge {
+    background: var(--caramel); color: white; border-radius: 50%;
+    width: 20px; height: 20px; font-size: 0.72rem; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hero {
+    min-height: 92vh; display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center; padding: 0 5vw; gap: 4rem; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ''; position: absolute; right: -10vw; top: -10vh;
+    width: 70vw; height: 70vw;
+    background: radial-gradient(circle, rgba(200,129,58,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-text { position: relative; z-index: 1; }
+  .hero-eyebrow {
+    display: inline-block; background: var(--gold); color: var(--dark);
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.35rem 1rem; border-radius: 50px; margin-bottom: 1.5rem;
+  }
+  .hero-title { font-family: 'Playfair Display', serif; font-size: clamp(2.8rem,5vw,4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; color: var(--dark); }
+  .hero-title em { color: var(--caramel); font-style: italic; }
+  .hero-sub { font-size: 1.05rem; line-height: 1.7; color: var(--mocha); max-width: 440px; margin-bottom: 2.5rem; font-weight: 300; }
+  .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+  .btn-primary {
+    background: var(--brown); color: var(--cream); padding: 0.85rem 2rem;
+    border-radius: 50px; border: none; font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem; font-weight: 500; cursor: pointer; text-decoration: none;
+    display: inline-block; transition: all 0.2s; letter-spacing: 0.02em;
+  }
+  .btn-primary:hover { background: var(--mocha); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(61,31,13,0.25); }
+  .btn-outline {
+    background: transparent; color: var(--brown); padding: 0.85rem 2rem;
+    border-radius: 50px; border: 2px solid var(--brown);
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--brown); color: var(--cream); }
+  .hero-rating { display: flex; align-items: center; gap: 0.6rem; margin-top: 2rem; font-size: 0.88rem; color: var(--mocha); }
+  .stars { color: var(--gold); font-size: 1rem; letter-spacing: 2px; }
+  .hero-visual { position: relative; display: flex; justify-content: center; align-items: center; }
+  .hero-circle {
+    width: 420px; height: 420px; border-radius: 50%;
+    background: linear-gradient(135deg,#c8813a22,#e6a84b33,#7b4a2d11);
+    border: 2px solid rgba(200,129,58,0.25);
+    display: flex; align-items: center; justify-content: center; position: relative;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-16px); } }
+  .hero-emoji { font-size: 7rem; filter: drop-shadow(0 20px 40px rgba(61,31,13,0.2)); }
+  .hero-badge { position: absolute; background: var(--brown); color: var(--cream); border-radius: 20px; padding: 0.7rem 1.2rem; font-size: 0.8rem; font-weight: 500; }
+  .hero-badge.top-right { top: 20px; right: -20px; }
+  .hero-badge.bottom-left { bottom: 40px; left: -30px; }
+  section { padding: 5rem 5vw; }
+  .section-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--caramel); margin-bottom: 0.6rem; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem,3vw,2.8rem); font-weight: 700; color: var(--dark); margin-bottom: 0.5rem; }
+  .section-sub { color: var(--mocha); font-weight: 300; font-size: 1rem; margin-bottom: 3rem; }
+  .categories-grid { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .cat-btn {
+    background: white; border: 2px solid rgba(200,129,58,0.25); padding: 0.5rem 1.2rem;
+    border-radius: 50px; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500;
+    cursor: pointer; color: var(--mocha); transition: all 0.2s;
+  }
+  .cat-btn:hover, .cat-btn.active { background: var(--brown); color: var(--cream); border-color: var(--brown); }
+  .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.4rem; }
+  .menu-card {
+    background: var(--white); border-radius: 20px; overflow: hidden;
+    border: 1px solid rgba(200,129,58,0.15); transition: transform 0.25s, box-shadow 0.25s;
+    display: flex; flex-direction: column;
+  }
+  .menu-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(61,31,13,0.12); }
+  .card-img { height: 150px; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; position: relative; }
+  .veg-dot {
+    position: absolute; top: 10px; right: 10px; width: 16px; height: 16px;
+    border-radius: 50%; border: 2px solid #2d7a2d; background: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .veg-dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #2d7a2d; }
+  .egg-dot {
+    position: absolute; top: 10px; right: 10px; width: 16px; height: 16px;
+    border-radius: 50%; border: 2px solid #c8812a; background: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .egg-dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #c8812a; }
+  .popular-tag {
+    position: absolute; top: 10px; left: 10px; background: var(--caramel); color: white;
+    font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.2rem 0.5rem; border-radius: 50px;
+  }
+  .card-body { padding: 1rem 1.1rem 1.1rem; flex: 1; display: flex; flex-direction: column; }
+  .card-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1rem; color: var(--dark); margin-bottom: 0.3rem; }
+  .card-desc { font-size: 0.76rem; color: var(--mocha); line-height: 1.5; font-weight: 300; flex: 1; margin-bottom: 0.9rem; }
+  .card-footer { display: flex; align-items: center; justify-content: space-between; }
+  .card-price { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; color: var(--brown); }
+  .add-btn {
+    background: var(--brown); color: var(--cream); border: none;
+    width: 34px; height: 34px; border-radius: 50%; font-size: 1.3rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .add-btn:hover { background: var(--caramel); transform: scale(1.1); }
+  .qty-ctrl { display: flex; align-items: center; gap: 0.4rem; background: var(--cream); border: 2px solid var(--brown); border-radius: 50px; padding: 0 0.2rem; }
+  .qty-btn {
+    background: none; border: none; width: 26px; height: 26px; font-size: 1rem; cursor: pointer;
+    color: var(--brown); font-weight: 700; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+  }
+  .qty-btn:hover { background: rgba(61,31,13,0.08); }
+  .qty-num { font-weight: 700; color: var(--brown); min-width: 16px; text-align: center; font-size: 0.88rem; }
+  .info-strip {
+    background: var(--brown); color: var(--cream); padding: 3rem 5vw;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 2rem; text-align: center;
+  }
+  .info-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .info-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.3rem; }
+  .info-val { font-family: 'Playfair Display', serif; font-size: 0.95rem; }
+  .cart-overlay { position: fixed; inset: 0; background: rgba(26,13,5,0.5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(4px); }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+  .cart-sidebar {
+    position: fixed; right: 0; top: 0; width: min(420px,100vw); height: 100vh;
+    background: var(--white); z-index: 201; transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+    display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(61,31,13,0.2);
+  }
+  .cart-sidebar.open { transform: translateX(0); }
+  .cart-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid rgba(200,129,58,0.2); display: flex; align-items: center; justify-content: space-between; }
+  .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: var(--dark); }
+  .close-cart { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--mocha); width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.15s; }
+  .close-cart:hover { background: rgba(61,31,13,0.08); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .cart-item { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid rgba(200,129,58,0.12); }
+  .cart-item-emoji { font-size: 2rem; min-width: 40px; text-align: center; }
+  .cart-item-name { font-weight: 500; font-size: 0.88rem; color: var(--dark); margin-bottom: 0.2rem; }
+  .cart-item-price { font-size: 0.78rem; color: var(--mocha); }
+  .cart-item-info { flex: 1; }
+  .cart-item-remove { background: none; border: none; color: #cc4444; cursor: pointer; font-size: 1rem; padding: 0.2rem; opacity: 0.6; transition: opacity 0.15s; }
+  .cart-item-remove:hover { opacity: 1; }
+  .cart-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 1rem; color: var(--mocha); font-size: 0.95rem; font-weight: 300; }
+  .cart-empty-icon { font-size: 4rem; }
+  .cart-footer { padding: 1.2rem 1.5rem; border-top: 1px solid rgba(200,129,58,0.2); background: var(--white); }
+  .cart-subtotal { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; }
+  .cart-subtotal-label { color: var(--mocha); font-size: 0.88rem; }
+  .cart-subtotal-val { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.3rem; color: var(--dark); }
+  .cart-gst { font-size: 0.72rem; color: var(--mocha); margin-bottom: 1rem; }
+  .checkout-btn {
+    width: 100%; background: var(--brown); color: var(--cream); border: none;
+    padding: 1rem; border-radius: 14px; font-family: 'DM Sans', sans-serif;
+    font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s;
+  }
+  .checkout-btn:hover { background: var(--mocha); }
+  .checkout-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(26,13,5,0.6); z-index: 300;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s; backdrop-filter: blur(6px); padding: 1rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); border-radius: 24px; width: min(500px,100%);
+    max-height: 90vh; overflow-y: auto; padding: 2rem;
+    transform: scale(0.9); transition: transform 0.3s; box-shadow: 0 30px 80px rgba(61,31,13,0.3);
+  }
+  .modal-overlay.open .modal { transform: scale(1); }
+  .modal h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--dark); margin-bottom: 0.4rem; }
+  .modal-sub { color: var(--mocha); font-size: 0.88rem; margin-bottom: 1.5rem; font-weight: 300; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--brown); margin-bottom: 0.4rem; letter-spacing: 0.04em; text-transform: uppercase; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 0.75rem 1rem; border: 2px solid rgba(200,129,58,0.25);
+    border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+    color: var(--dark); background: var(--cream); transition: border-color 0.2s; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--caramel); }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .order-summary-mini { background: var(--cream); border-radius: 14px; padding: 1rem 1.2rem; margin: 1.2rem 0; border: 1px solid rgba(200,129,58,0.2); }
+  .order-summary-mini h3 { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--dark); margin-bottom: 0.8rem; }
+  .summary-line { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--mocha); margin-bottom: 0.4rem; }
+  .summary-total { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.95rem; color: var(--dark); border-top: 1px solid rgba(200,129,58,0.2); margin-top: 0.5rem; padding-top: 0.5rem; }
+  .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+  .pay-opt { border: 2px solid rgba(200,129,58,0.25); border-radius: 12px; padding: 0.8rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+  .pay-opt.selected { border-color: var(--brown); background: rgba(61,31,13,0.05); }
+  .pay-opt-icon { font-size: 1.4rem; margin-bottom: 0.3rem; }
+  .pay-opt-label { font-size: 0.78rem; font-weight: 600; color: var(--dark); }
+  .modal-actions { display: flex; gap: 1rem; margin-top: 1rem; }
+  .modal-cancel { flex: 1; background: transparent; border: 2px solid rgba(200,129,58,0.3); padding: 0.85rem; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; cursor: pointer; color: var(--mocha); transition: all 0.2s; }
+  .modal-cancel:hover { border-color: var(--brown); color: var(--brown); }
+  .modal-confirm { flex: 2; background: var(--brown); color: var(--cream); border: none; padding: 0.85rem; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .modal-confirm:hover { background: var(--mocha); }
+  .success-screen { text-align: center; padding: 2rem 0; }
+  .success-icon { font-size: 5rem; margin-bottom: 1rem; animation: popIn 0.5s ease; }
+  @keyframes popIn { 0% { transform: scale(0); } 70% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .success-screen h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--dark); margin-bottom: 0.5rem; }
+  .success-screen p { color: var(--mocha); font-size: 0.92rem; font-weight: 300; line-height: 1.6; }
+  .order-id { font-weight: 700; color: var(--caramel); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+  .about-visual { background: linear-gradient(135deg,rgba(200,129,58,0.1),rgba(230,168,75,0.15)); border-radius: 24px; height: 380px; display: flex; align-items: center; justify-content: center; font-size: 8rem; border: 1px solid rgba(200,129,58,0.2); }
+  .about-text h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 700; color: var(--dark); margin-bottom: 1rem; }
+  .about-text p { color: var(--mocha); line-height: 1.75; font-weight: 300; margin-bottom: 1rem; font-size: 0.97rem; }
+  .about-detail { display: flex; align-items: flex-start; gap: 0.6rem; font-size: 0.88rem; color: var(--mocha); margin-top: 0.5rem; line-height: 1.5; }
+  footer { background: var(--dark); color: rgba(253,246,236,0.7); padding: 4rem 5vw 2rem; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--cream); margin-bottom: 0.8rem; }
+  .footer-logo span { color: var(--caramel); }
+  .footer-tagline { font-size: 0.88rem; font-weight: 300; line-height: 1.6; }
+  .footer-col h4 { color: var(--cream); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; }
+  .footer-col p, .footer-col a { font-size: 0.85rem; line-height: 1.8; color: rgba(253,246,236,0.6); text-decoration: none; display: block; }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom { border-top: 1px solid rgba(253,246,236,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.8rem; color: rgba(253,246,236,0.35); }
+  .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dark); color: var(--cream); padding: 0.8rem 1.5rem; border-radius: 50px; font-size: 0.88rem; font-weight: 500; z-index: 500; transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94); white-space: nowrap; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding: 3rem 5vw; text-align: center; gap: 2.5rem; }
+    .hero-sub { margin: 0 auto 2rem; }
+    .hero-cta { justify-content: center; }
+    .hero-rating { justify-content: center; }
+    .hero-circle { width: 240px; height: 240px; }
+    .hero-emoji { font-size: 4.5rem; }
+    .hero-badge { display: none; }
+    .about-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; gap: 0.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    nav .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Cocoa<span>Bakes</span></div>
+  <ul class="nav-links">
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cart" onclick="openCart()">
+    🛒 Cart <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">⭐ 4.4 · 1,012 Reviews · Bengaluru</div>
+    <h1 class="hero-title">Handcrafted<br>with <em>Love & Cocoa</em></h1>
+    <p class="hero-sub">From cloud-soft pastries to decadent chocolate truffle cakes — every bite from Cocoa Bakes is a moment worth savoring. Baked fresh daily in Banashankari, Bengaluru.</p>
+    <div class="hero-cta">
+      <a href="#menu" class="btn-primary">Explore Menu →</a>
+      <button class="btn-outline" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">Our Story</button>
+    </div>
+    <div class="hero-rating">
+      <span class="stars">★★★★½</span>
+      <strong>4.4</strong>
+      <span>(1,012 Google reviews)</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-circle">
+      <div class="hero-emoji">🍰</div>
+      <div class="hero-badge top-right">🎂 Custom Cakes</div>
+      <div class="hero-badge bottom-left">✨ Fresh Daily</div>
+    </div>
+  </div>
+</section>
+
+<div class="info-strip">
+  <div class="info-item"><div class="info-icon">📍</div><div class="info-label">Location</div><div class="info-val">Banashankari, Bengaluru</div></div>
+  <div class="info-item"><div class="info-icon">🕐</div><div class="info-label">Hours</div><div class="info-val">Daily · Open Now</div></div>
+  <div class="info-item"><div class="info-icon">📞</div><div class="info-label">Call Us</div><div class="info-val">094808 88444</div></div>
+  <div class="info-item"><div class="info-icon">💰</div><div class="info-label">Budget</div><div class="info-val">₹200 – ₹400</div></div>
+</div>
+
+<section id="menu">
+  <div class="section-label">What We Offer</div>
+  <h2 class="section-title">Our Menu</h2>
+  <p class="section-sub">Fresh-baked goodness, made every day with the finest ingredients.</p>
+  <div class="categories-grid" id="catGrid"></div>
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<section id="about" style="background: var(--white);">
+  <div class="about-grid">
+    <div class="about-visual">🍫</div>
+    <div class="about-text">
+      <div class="section-label">Our Story</div>
+      <h2>A Little Bakery with a Big Heart</h2>
+      <p>Nestled in the heart of Banashankari Stage II, Cocoa Bakes has become Bengaluru's beloved neighbourhood bakery — crafting handmade pastries, cakes, pizzas, and comfort food for everyone.</p>
+      <p>With over 1,000 five-star reviews and a loyal community of sweet-toothed locals, we pour passion into every recipe. From our legendary Chocolate Truffle Cake to our savoury Dragon Paneer, there's always something new to discover.</p>
+      <div class="about-detail">📍 2496, 21st Main, 25th Cross Rd, Siddanna Layout, Banashankari Stage II, Bengaluru — 560070</div>
+      <div class="about-detail" style="margin-top:0.5rem">📞 094808 88444</div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Cocoa<span>Bakes</span></div>
+      <p class="footer-tagline">Bengaluru's sweetest bakery — handcrafted with love. Fresh pastries, cakes, and café bites made daily in Banashankari.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#menu">Menu</a>
+      <a href="#about">About</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="footer-col">
+      <h4>Find Us</h4>
+      <p>2496, 21st Main<br>25th Cross Rd<br>Banashankari Stage II<br>Bengaluru 560070</p>
+      <p style="margin-top:0.6rem">📞 094808 88444</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Cocoa Bakes. All rights reserved.</span>
+    <span>Made with ❤️ in Bengaluru</span>
+  </div>
+</footer>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h2>Your Order</h2>
+    <button class="close-cart" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Your cart is empty.<br>Add something delicious!</p></div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span class="cart-subtotal-label">Subtotal</span>
+      <span class="cart-subtotal-val" id="cartTotal">₹0</span>
+    </div>
+    <div class="cart-gst">Inclusive of all taxes · Delivery charges may apply</div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>Proceed to Checkout</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div id="checkoutContent">
+      <h2>Place Your Order 🍰</h2>
+      <p class="modal-sub">Fill in your details and we'll get your order ready!</p>
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="fname" placeholder="Priya" /></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="lname" placeholder="Kumar" /></div>
+      </div>
+      <div class="form-group"><label>Phone Number</label><input type="tel" id="phone" placeholder="+91 98765 43210" /></div>
+      <div class="form-group">
+        <label>Order Type</label>
+        <select id="orderType" onchange="toggleAddress()">
+          <option value="delivery">🛵 Home Delivery</option>
+          <option value="pickup">🏪 Pickup from Store</option>
+        </select>
+      </div>
+      <div class="form-group" id="addressGroup"><label>Delivery Address</label><textarea id="address" placeholder="Enter your full delivery address in Bengaluru..."></textarea></div>
+      <div class="order-summary-mini" id="orderSummaryMini"></div>
+      <div style="font-size:0.78rem;font-weight:700;color:var(--brown);letter-spacing:0.04em;text-transform:uppercase;margin-bottom:0.8rem;">Payment Method</div>
+      <div class="payment-methods">
+        <div class="pay-opt selected" onclick="selectPay(this,'upi')"><div class="pay-opt-icon">📱</div><div class="pay-opt-label">UPI / GPay</div></div>
+        <div class="pay-opt" onclick="selectPay(this,'cash')"><div class="pay-opt-icon">💵</div><div class="pay-opt-label">Cash on Delivery</div></div>
+        <div class="pay-opt" onclick="selectPay(this,'card')"><div class="pay-opt-icon">💳</div><div class="pay-opt-label">Card</div></div>
+        <div class="pay-opt" onclick="selectPay(this,'netbanking')"><div class="pay-opt-icon">🏦</div><div class="pay-opt-label">Net Banking</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeCheckout()">Cancel</button>
+        <button class="modal-confirm" onclick="placeOrder()">Confirm Order 🎉</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const menuData = [
+  {id:1,name:'Burnt Capsicum Soup',price:194,category:'Soup',emoji:'🫑',desc:'Smooth creamy spicy soup with smoky flavour from roasted red bell peppers topped with herbs',veg:true},
+  {id:2,name:'Cream Of Veg Soup',price:190,category:'Soup',emoji:'🥣',desc:'Hearty bowl of creamy soup packed with vegetables',veg:true},
+  {id:3,name:'Mushroom Soup',price:171,category:'Soup',emoji:'🍄',desc:'Garlic, cream, and fresh herbs with caramelized mushrooms & diced onions',veg:true},
+  {id:4,name:'Veg Clear Soup',price:190,category:'Soup',emoji:'🥬',desc:'Light, healthy, nutritious and refreshing clear soup',veg:true,popular:true},
+  {id:5,name:'Masala Cheese Omelette',price:190,category:'Eggies',emoji:'🧀',desc:'Fluffy omelette with spices, veggies, herbs and cheese!',veg:false},
+  {id:6,name:'Classic Omelette',price:95,category:'Eggies',emoji:'🍳',desc:'Whisked and cooked eggs, simple yet satisfying',veg:false},
+  {id:7,name:'Desi Egg Fry',price:152,category:'Eggies',emoji:'🥚',desc:'Boiled egg fry infused with butter and spices, coated with spicy gravy',veg:false},
+  {id:8,name:'Masala Omelette',price:114,category:'Eggies',emoji:'🌶️',desc:'All-time favourite with tangy tomatoes, crunchy onions & peppy spices',veg:false},
+  {id:9,name:'Egg Royale',price:190,category:'Eggies',emoji:'🍳',desc:'Royal egg preparation with premium spices and toppings',veg:false,popular:true},
+  {id:10,name:'Spanish Omelette',price:190,category:'Eggies',emoji:'🥘',desc:'Classic Spanish omelette with potatoes and onions',veg:false},
+  {id:11,name:'Cottage Cheese Quesadilla',price:210,category:'Quesadillas',emoji:'🫓',desc:'Paneer tossed in spices with sour cream and vegetables — Mexican twist!',veg:true},
+  {id:12,name:'Mushroom Quesadilla',price:210,category:'Quesadillas',emoji:'🍄',desc:'Creamy vegetarian quesadilla loaded with meaty mushrooms',veg:true},
+  {id:13,name:'American Cheesy Loaded Nachos',price:181,category:'Appetizers',emoji:'🌮',desc:'Crispy nachos loaded with cheese and toppings',veg:true,popular:true},
+  {id:14,name:'Cheesy Loaded Fries',price:152,category:'Appetizers',emoji:'🍟',desc:'Crispy fries loaded with melted cheese',veg:true},
+  {id:15,name:'Corn Croquets',price:190,category:'Appetizers',emoji:'🌽',desc:'Golden crispy corn croquettes',veg:true},
+  {id:16,name:'French Fries Plain',price:114,category:'Appetizers',emoji:'🍟',desc:'Classic crispy golden fries',veg:true},
+  {id:17,name:'Peri Peri French Fries',price:143,category:'Appetizers',emoji:'🔥',desc:'Spicy peri peri seasoned fries',veg:true},
+  {id:18,name:'Salt & Pepper Corn',price:210,category:'Appetizers',emoji:'🌽',desc:'Sweet corn tossed with salt and pepper',veg:true},
+  {id:19,name:'Bruschetta',price:171,category:'Toasties',emoji:'🥖',desc:'Toasted bread topped with tomatoes, cheese, garlic, and basil',veg:true},
+  {id:20,name:'Garlic Bread Plain',price:152,category:'Toasties',emoji:'🥖',desc:'Toasted bread with butter, garlic & herbs',veg:true},
+  {id:21,name:'Garlic Bread Cheese',price:181,category:'Toasties',emoji:'🧀',desc:'Soft inside, crispy edges with perfect cheese/butter/garlic ratio',veg:true},
+  {id:22,name:'Aglio Olio',price:267,category:'Pasta',emoji:'🍝',desc:'Fresh garlic, olive oil, red pepper flakes and Parmesan with spaghetti',veg:true},
+  {id:23,name:'Alfredo Pasta',price:248,category:'Pasta',emoji:'🍝',desc:'Classic creamy pasta in rich alfredo sauce with parmesan and whipping cream',veg:true},
+  {id:24,name:'Arabbiata Pasta',price:267,category:'Pasta',emoji:'🌶️',desc:'Spicy red chilli peppers, garlic and tomatoes in olive oil',veg:true},
+  {id:25,name:'Parma Rosa Pasta',price:257,category:'Pasta',emoji:'🍝',desc:'Pink sauce pasta — marinara and alfredo combined with a dash of herbs',veg:true},
+  {id:26,name:'Exotic Veg Pizza',price:333,category:'Pizza',emoji:'🍕',desc:'Bell peppers, Zucchini, Broccoli, Olives & Jalapenos',veg:true,popular:true},
+  {id:27,name:'Fully Loaded Pizza',price:333,category:'Pizza',emoji:'🍕',desc:'Paneer, black olives, jalapenos, onion, corn and peppers with mozzarella',veg:true},
+  {id:28,name:'Classic Margherita Pizza',price:333,category:'Pizza',emoji:'🍕',desc:'Italian classic — tomatoes, mozzarella, garlic and extra-virgin olive oil',veg:true},
+  {id:29,name:'Dragon Paneer',price:190,category:'Specials',emoji:'🐉',desc:'Fiery dragon-style paneer preparation — a house special!',veg:true,popular:true},
+  {id:30,name:'Eggi Maggi',price:133,category:'Maggi',emoji:'🍜',desc:'Classic maggi with egg',veg:false},
+  {id:31,name:'Herb Maggi',price:133,category:'Maggi',emoji:'🌿',desc:'Maggi with fresh herbs',veg:true},
+  {id:32,name:'Paneer Maggi',price:143,category:'Maggi',emoji:'🧀',desc:'Creamy maggi with soft paneer',veg:true},
+  {id:33,name:'Brownie Milkshake',price:190,category:'Milkshakes',emoji:'🥤',desc:'Rich brownie milkshake · 300ml',veg:true},
+  {id:34,name:'Cookies And Cream Milkshake',price:190,category:'Milkshakes',emoji:'🍪',desc:'Creamy cookies and cream milkshake · 300ml',veg:true},
+  {id:35,name:'Brownie Fudge Sundae',price:171,category:'Sundaes',emoji:'🍨',desc:'Rich brownie fudge sundae',veg:true},
+  {id:36,name:'Chocolate Truffle Sundae',price:190,category:'Sundaes',emoji:'🍫',desc:'Decadent chocolate truffle sundae',veg:true},
+  {id:37,name:'Hot Chocolate Fudge',price:95,category:'Sundaes',emoji:'🍫',desc:'Warm rich hot chocolate fudge',veg:true},
+  {id:38,name:'Sizzling Brownie',price:238,category:'Sundaes',emoji:'✨',desc:'Sizzling hot brownie served with ice cream',veg:true},
+  {id:39,name:'Chocolate Cup Cake',price:76,category:'Cupcakes',emoji:'🧁',desc:'Moist chocolate cupcake',veg:true},
+  {id:40,name:'Red Velvet Cup Cake',price:76,category:'Cupcakes',emoji:'❤️',desc:'Classic red velvet cupcake',veg:true},
+  {id:41,name:'Rainbow Cup Cake',price:76,category:'Cupcakes',emoji:'🌈',desc:'Colourful rainbow cupcake',veg:true},
+  {id:42,name:'Salted Caramel Cup Cake',price:76,category:'Cupcakes',emoji:'🧁',desc:'Sweet and salty caramel cupcake',veg:true},
+  {id:43,name:'Cookies And Cream Cup Cake',price:76,category:'Cupcakes',emoji:'🍪',desc:'Cookies and cream cupcake',veg:true},
+  {id:44,name:'Fudgy Brownie',price:94,category:'Brownies',emoji:'🍫',desc:'Dense, rich fudgy brownie',veg:true},
+  {id:45,name:'Walnut Brownie',price:94,category:'Brownies',emoji:'🫘',desc:'Brownie packed with crunchy walnuts',veg:false},
+  {id:46,name:'Brownie With Hot Chocolate Sauce',price:124,category:'Brownies',emoji:'🍫',desc:'Fudgy brownie with warm chocolate sauce',veg:true},
+  {id:47,name:'Chocolate Macaron',price:67,category:'Macarons',emoji:'🍬',desc:'Delicate French chocolate macaron',veg:true},
+  {id:48,name:'Chocolate Truffle Cake',price:380,category:'Cakes',emoji:'🎂',desc:'Our signature chocolate truffle cake — a crowd favourite!',veg:true,popular:true},
+  {id:49,name:'Blueberry Cheesecake',price:167,category:'Cakes',emoji:'🫐',desc:'Creamy cheesecake with blueberry topping',veg:true},
+  {id:50,name:'Chocolate Cheese Cake',price:167,category:'Cakes',emoji:'🍫',desc:'Rich chocolate cheesecake',veg:true},
+  {id:51,name:'Lychee Tres Leches',price:220,category:'Cakes',emoji:'🍈',desc:'Light sponge soaked in three milks with lychee flavour',veg:true,popular:true},
+  {id:52,name:'Bento Cakes',price:450,category:'Cakes',emoji:'🎂',desc:'Adorable mini bento cakes, perfect for gifting',veg:true},
+  {id:53,name:'Cardamom Tea',price:19,category:'Tea',emoji:'☕',desc:'Aromatic cardamom tea',veg:true},
+  {id:54,name:'Ginger Tea',price:19,category:'Tea',emoji:'🫚',desc:'Warming ginger tea',veg:true},
+  {id:55,name:'Masala Tea',price:24,category:'Tea',emoji:'☕',desc:'Spiced Indian masala chai',veg:true},
+  {id:56,name:'Classic Chocolate Scoop',price:66,category:'Ice Cream',emoji:'🍦',desc:'Rich classic chocolate ice cream',veg:true},
+  {id:57,name:'Classic Vanilla Scoop',price:66,category:'Ice Cream',emoji:'🍦',desc:'Smooth classic vanilla ice cream',veg:true},
+  {id:58,name:'Water Bottle',price:14,category:'Drinks',emoji:'💧',desc:'Chilled water bottle',veg:true},
+];
+
+const categories = ['All', ...new Set(menuData.map(i => i.category))];
+let activeCategory = 'All';
+let cart = {};
+let selectedPayment = 'upi';
+
+const bgMap = {
+  Soup:'linear-gradient(135deg,#fff8f0,#ffecd8)',Eggies:'linear-gradient(135deg,#fffbf0,#fff3c8)',
+  Quesadillas:'linear-gradient(135deg,#fff5ee,#fde8d0)',Appetizers:'linear-gradient(135deg,#fff8f0,#ffe8cc)',
+  Toasties:'linear-gradient(135deg,#fffdf0,#fdf5d8)',Pasta:'linear-gradient(135deg,#fff5f5,#fde8e0)',
+  Pizza:'linear-gradient(135deg,#fff3ee,#fde4d4)',Maggi:'linear-gradient(135deg,#fff8f0,#fde8cc)',
+  Milkshakes:'linear-gradient(135deg,#f5f0ff,#ede0ff)',Sundaes:'linear-gradient(135deg,#f0f8ff,#d8eeff)',
+  Cupcakes:'linear-gradient(135deg,#fff0f8,#ffd8ee)',Brownies:'linear-gradient(135deg,#fdf0e8,#f5d8c0)',
+  Macarons:'linear-gradient(135deg,#f8f0ff,#eed8ff)',Cakes:'linear-gradient(135deg,#fff0ee,#ffd8d4)',
+  Tea:'linear-gradient(135deg,#f0fff8,#d8f5e8)','Ice Cream':'linear-gradient(135deg,#f5f5ff,#e0e0ff)',
+  Specials:'linear-gradient(135deg,#fff3e0,#ffe0b2)',Drinks:'linear-gradient(135deg,#e8f5ff,#d0eaff)',
+};
+
+function renderCategories() {
+  document.getElementById('catGrid').innerHTML = categories.map(c =>
+    `<button class="cat-btn${c===activeCategory?' active':''}" onclick="filterCat('${c}')">${c}</button>`
+  ).join('');
+}
+
+function filterCat(c) { activeCategory=c; renderCategories(); renderMenu(); }
+
+function renderMenu() {
+  const items = activeCategory==='All' ? menuData : menuData.filter(i=>i.category===activeCategory);
+  document.getElementById('menuGrid').innerHTML = items.map(item => {
+    const qty = cart[item.id]?.qty||0;
+    return `
+    <div class="menu-card">
+      <div class="card-img" style="background:${bgMap[item.category]||'#fff8f0'}">
+        ${item.emoji}
+        ${item.popular?'<span class="popular-tag">Popular</span>':''}
+        ${item.veg?'<div class="veg-dot"></div>':'<div class="egg-dot"></div>'}
+      </div>
+      <div class="card-body">
+        <div class="card-name">${item.name}</div>
+        <div class="card-desc">${item.desc}</div>
+        <div class="card-footer">
+          <div class="card-price">₹${item.price}</div>
+          ${qty===0
+            ?`<button class="add-btn" onclick="addItem(${item.id})">+</button>`
+            :`<div class="qty-ctrl">
+                <button class="qty-btn" onclick="removeItem(${item.id})">−</button>
+                <span class="qty-num">${qty}</span>
+                <button class="qty-btn" onclick="addItem(${item.id})">+</button>
+              </div>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addItem(id) {
+  const item = menuData.find(i=>i.id===id);
+  if (!cart[id]) cart[id]={...item,qty:0};
+  cart[id].qty++;
+  updateCart(); renderMenu(); showToast(`${item.emoji} Added!`);
+}
+
+function removeItem(id) {
+  if (!cart[id]) return;
+  cart[id].qty--;
+  if (cart[id].qty===0) delete cart[id];
+  updateCart(); renderMenu(); renderCartSidebar();
+}
+
+function updateCart() {
+  const count = Object.values(cart).reduce((s,i)=>s+i.qty,0);
+  const total = Object.values(cart).reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('cartBadge').textContent=count;
+  document.getElementById('cartTotal').textContent=`₹${Math.round(total)}`;
+  document.getElementById('checkoutBtn').disabled=count===0;
+}
+
+function openCart() { renderCartSidebar(); document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartSidebar').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartSidebar').classList.remove('open'); document.body.style.overflow=''; }
+
+function renderCartSidebar() {
+  const items=Object.values(cart);
+  const el=document.getElementById('cartItems');
+  if (!items.length) { el.innerHTML='<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Your cart is empty.<br>Add something delicious!</p></div>'; return; }
+  el.innerHTML=items.map(i=>`
+    <div class="cart-item">
+      <div class="cart-item-emoji">${i.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${i.name} × ${i.qty}</div>
+        <div class="cart-item-price">₹${Math.round(i.price*i.qty)}</div>
+      </div>
+      <button class="cart-item-remove" onclick="removeItem(${i.id});renderCartSidebar()">✕</button>
+    </div>`).join('');
+}
+
+function openCheckout() { closeCart(); renderSummary(); document.getElementById('modalOverlay').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeCheckout() { document.getElementById('modalOverlay').classList.remove('open'); document.body.style.overflow=''; }
+
+function toggleAddress() {
+  const type = document.getElementById('orderType').value;
+  document.getElementById('addressGroup').style.display = type==='pickup' ? 'none' : 'block';
+}
+
+function renderSummary() {
+  const items=Object.values(cart);
+  const sub=items.reduce((s,i)=>s+i.price*i.qty,0);
+  const gst=sub*0.05;
+  const el=document.getElementById('orderSummaryMini');
+  if (!el) return;
+  el.innerHTML=`<h3>Order Summary</h3>${items.map(i=>`<div class="summary-line"><span>${i.emoji} ${i.name} ×${i.qty}</span><span>₹${Math.round(i.price*i.qty)}</span></div>`).join('')}
+  <div class="summary-line"><span>GST (5%)</span><span>₹${Math.round(gst)}</span></div>
+  <div class="summary-total"><span>Total</span><span>₹${Math.round(sub+gst)}</span></div>`;
+}
+
+function selectPay(el, m) { document.querySelectorAll('.pay-opt').forEach(p=>p.classList.remove('selected')); el.classList.add('selected'); selectedPayment=m; }
+
+function placeOrder() {
+  const fname=document.getElementById('fname').value.trim();
+  const phone=document.getElementById('phone').value.trim();
+  const orderType=document.getElementById('orderType').value;
+  const address=document.getElementById('address')?.value.trim();
+  if (!fname) { showToast('Please enter your name'); return; }
+  if (!phone) { showToast('Please enter your phone number'); return; }
+  if (orderType==='delivery' && !address) { showToast('Please enter your delivery address'); return; }
+  const orderId='CB'+Math.random().toString(36).substr(2,6).toUpperCase();
+  const items=Object.values(cart);
+  const total=Math.round(items.reduce((s,i)=>s+i.price*i.qty,0)*1.05);
+  const pLabel={upi:'UPI/GPay',cash:'Cash on Delivery',card:'Card',netbanking:'Net Banking'}[selectedPayment];
+  document.getElementById('checkoutContent').innerHTML=`
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <h2>Order Placed!</h2>
+      <p>Thank you, <strong>${fname}</strong>! Your order <span class="order-id">#${orderId}</span> has been confirmed.<br><br>
+      ${orderType==='delivery'?'We\'ll deliver to your address soon.':'Please collect your order from our store at Banashankari.'}<br><br>
+      Payment: <strong>${pLabel}</strong> · Total: <strong>₹${total}</strong><br><br>
+      For queries, call <strong>094808 88444</strong></p>
+      <button class="btn-primary" style="margin-top:1.5rem" onclick="finishOrder()">Done ✓</button>
+    </div>`;
+  cart={}; updateCart(); renderMenu();
+}
+
+function finishOrder() { closeCheckout(); }
+
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+renderCategories();
+renderMenu();
+</script>
+</body>
+</html>
